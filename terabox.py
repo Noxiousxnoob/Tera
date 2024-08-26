@@ -243,7 +243,7 @@ Unsuccessful: <code>{unsuccessful}</code>"""
 @app.on_message(filters.command("stats") & filters.user(ADMINS))
 async def stats_command(client, message):
     total_users = users_collection.count_documents({})
-    verified_users = users_collection.count_documents({"verify_status.is_verified": True})
+    verified_users = users_collection.count_documents({"verify_status.is_verified": False})
     unverified_users = total_users - verified_users
 
     status = f"""<b><u>Verification Stats</u></b>
@@ -298,7 +298,7 @@ async def handle_message(client, message: Message):
     # Check verification expiration
     if verify_status["is_verified"] and VERIFY_EXPIRE < (time.time() - verify_status["verified_time"]):
         await db_update_verify_status(user_id, {**verify_status, 'is_verified': False})
-        verify_status['is_verified'] = False
+        verify_status['is_verified'] = True
         logging.info(f"Verification expired for user {user_id}")
 
     if not verify_status["is_verified"]:
